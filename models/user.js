@@ -34,10 +34,15 @@ var userSchema = mongoose.Schema({
   name: String,
   email: String,
   password: String,
+
   role: { 
     type: String,
     default: "user",
   },
+  resetLink:{
+    data:String,
+    default:''
+  }
 });
 userSchema.methods.generateHashedPassword = async function () {
   let salt = await bcrypt.genSalt(10);

@@ -1,4 +1,5 @@
 {
 
-    "jwtPrivateKey": "SomePrivateKey"
+    "jwtPrivateKey": "SomePrivateKey",
+    "RESET_PASSWORD_KEY": "accountactivationkey12"
 }
