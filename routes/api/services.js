@@ -34,6 +34,7 @@ const upload= multer({
 }).single('testImage')
 
 
+
 // image upload
 router.post("/upload",(req,res)=>{
   upload(req,res,(err)=>{
@@ -45,7 +46,7 @@ if(err){
     
     firstname:req.body.firstname,
     lastname:req.body.lastname,
-  city:req.body.city,
+    city:req.body.city,
     phone:req.body.phone,
   
     image:{
@@ -62,13 +63,13 @@ if(err){
 //Insert a record
 
 //get products
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   console.log(req.user);
   let page = Number(req.query.page ? req.query.page : 1);
   let perPage = Number(req.query.perPage ? req.query.perPage : 10);
   let skipRecords = perPage * (page - 1);
   let products = await Product.find().skip(skipRecords).limit(perPage);
-  return res.send (products);
+  return res.json({products});
 }); 
 
 //get single products

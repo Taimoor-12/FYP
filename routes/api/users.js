@@ -78,6 +78,7 @@ var api_key = 'XXXXXXXXXXXXXXXXXXXXXXX';
 const mg=mailgun({apiKey:api_key,domain:DOMAIN})
 
 var nodemailer = require('nodemailer');
+const auth = require("../../middlewares/auth");
 router.post("/register", async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) return res.status(400).send("User with given Email already exist");
@@ -104,7 +105,28 @@ router.post("/login", async (req, res) => {
     { _id: user._id, name: user.name },
     config.get("jwtPrivateKey")
   );
-  res.send(token);
+  res.json({ token, ...user._doc});
+});
+
+router.post("/tokenIsValid", async (req, res) => {
+  try {
+    const token = req.header("x-auth-token");
+    if (!token) return res.json(false);
+    const verified = jwt.verify(token, config.get("jwtPrivateKey"));
+    if (!verified) return res.json(false);
+
+    const user = await User.findById(verified._id);
+    if (!user) return res.json(false);
+    res.json(true);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.get('/', auth, async(req, res) => {
+  const user = await User.findById(req.user);
+  res.json({...user._doc, token: req.token});
+
 });
 
 router.put("/forgot", async(req,res)=>{
